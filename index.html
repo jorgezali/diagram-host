@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peta Blok Diagram → Kode → Grafik FSO-UAV</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f8fafc;color:#1e293b;padding:16px}
+h1{font-size:16px;font-weight:600;color:#0f172a;margin-bottom:4px}
+.sub{font-size:12px;color:#64748b;margin-bottom:14px}
+
+.chain{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;gap:4px;margin:12px 0 6px}
+.blok{cursor:pointer;transition:all .15s;border:2px solid transparent;border-radius:8px;padding:7px 5px;text-align:center;min-width:70px;flex:1}
+.blok:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.blok.on{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.blok-icon{font-size:16px;margin-bottom:2px}
+.blok-title{font-size:9.5px;font-weight:600;line-height:1.3}
+.blok-sub{font-size:8.5px;opacity:.75;margin-top:1px}
+.arr{display:flex;align-items:center;color:#94a3b8;font-size:13px;padding:0 1px;flex-shrink:0}
+
+.tx{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.tx.on{background:#dbeafe;border-color:#3b82f6}
+.ch{background:#f0fdf4;border-color:#bbf7d0;color:#14532d}
+.ch.on{background:#dcfce7;border-color:#22c55e}
+.rx{background:#fff7ed;border-color:#fed7aa;color:#7c2d12}
+.rx.on{background:#ffedd5;border-color:#f97316}
+.out{background:#f5f3ff;border-color:#ddd6fe;color:#4c1d95}
+.out.on{background:#ede9fe;border-color:#8b5cf6}
+
+.hint{font-size:10px;color:#94a3b8;text-align:center;margin-bottom:10px}
+
+.detail{display:none;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:6px}
+.detail.on{display:block}
+.dh{padding:10px 14px;font-size:12px;font-weight:600;color:#fff}
+.db{padding:12px 14px;background:#fff}
+
+.ri{display:flex;gap:8px;margin:6px 0;align-items:flex-start}
+.pill{flex-shrink:0;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap;margin-top:1px}
+.pb{background:#dbeafe;color:#1d4ed8}
+.pg{background:#dcfce7;color:#166534}
+.pa{background:#fef3c7;color:#92400e}
+.pp{background:#ede9fe;color:#5b21b6}
+.pgr{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+
+.rt{font-size:11.5px;color:#1e293b;line-height:1.7}
+.rc{font-family:monospace;font-size:10px;background:#f8fafc;border:1px solid #e2e8f0;padding:5px 9px;border-radius:4px;display:block;margin:4px 0;color:#1d4ed8;line-height:1.6}
+.rn{font-size:10px;color:#64748b;margin-top:3px;line-height:1.5}
+.sep{height:1px;background:#f1f5f9;margin:8px 0}
+
+.gtag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;margin:2px 2px 2px 0;background:#ede9fe;color:#5b21b6;border:1px solid #ddd6fe}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+.gcard{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:7px 9px}
+.gc-title{font-size:10px;font-weight:600;margin-bottom:3px}
+.gc-text{font-size:9px;color:#64748b;line-height:1.5}
+</style>
+</head>
+<body>
+
+<h1>Peta Blok Diagram → Kode → Grafik FSO-UAV</h1>
+<div class="sub">Klik tiap blok untuk melihat: apa yang terjadi di kode, baris berapa, dan grafik mana yang dihasilkan di tahap itu</div>
+
+<div class="chain">
+  <div class="blok tx" id="b-ds" onclick="show('ds')">
+    <div class="blok-icon">📋</div>
+    <div class="blok-title">Data source</div>
+    <div class="blok-sub">bit digital</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok tx" id="b-mod" onclick="show('mod')">
+    <div class="blok-icon">📡</div>
+    <div class="blok-title">Modulator</div>
+    <div class="blok-sub">OOK / PPM</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok tx" id="b-las" onclick="show('las')">
+    <div class="blok-icon">🔦</div>
+    <div class="blok-title">Laser diode</div>
+    <div class="blok-sub">1550 nm</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok tx" id="b-txt" onclick="show('txt')">
+    <div class="blok-icon">🔭</div>
+    <div class="blok-title">TX telescope</div>
+    <div class="blok-sub">θ_div = 2 mrad</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok ch" id="b-ha" onclick="show('ha')">
+    <div class="blok-icon">🌧</div>
+    <div class="blok-title">h_a atenuasi</div>
+    <div class="blok-sub">Beer-Lambert</div>
+  </div>
+  <div class="arr">×</div>
+  <div class="blok ch" id="b-ht" onclick="show('ht')">
+    <div class="blok-icon">🌀</div>
+    <div class="blok-title">h_t turbulensi</div>
+    <div class="blok-sub">Log-Normal</div>
+  </div>
+  <div class="arr">×</div>
+  <div class="blok ch" id="b-hp" onclick="show('hp')">
+    <div class="blok-icon">🎯</div>
+    <div class="blok-title">h_p pointing</div>
+    <div class="blok-sub">Rayleigh</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok rx" id="b-rxt" onclick="show('rxt')">
+    <div class="blok-icon">🔭</div>
+    <div class="blok-title">RX telescope</div>
+    <div class="blok-sub">D_rx = 10 cm</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok rx" id="b-pd" onclick="show('pd')">
+    <div class="blok-icon">💡</div>
+    <div class="blok-title">PIN photodiode</div>
+    <div class="blok-sub">R = 0.8 A/W</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok rx" id="b-tia" onclick="show('tia')">
+    <div class="blok-icon">🔊</div>
+    <div class="blok-title">TIA + BPF</div>
+    <div class="blok-sub">noise model</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok rx" id="b-dem" onclick="show('dem')">
+    <div class="blok-icon">⚖️</div>
+    <div class="blok-title">Demodulator</div>
+    <div class="blok-sub">threshold / ML</div>
+  </div>
+  <div class="arr">→</div>
+  <div class="blok out" id="b-out" onclick="show('out')">
+    <div class="blok-icon">📊</div>
+    <div class="blok-title">Output data</div>
+    <div class="blok-sub">BER · SNR · C</div>
+  </div>
+</div>
+
+<p class="hint">↑ Klik blok untuk detail · Klik lagi untuk tutup</p>
+
+<!-- DATA SOURCE -->
+<div class="detail" id="d-ds">
+<div class="dh" style="background:#1e40af">📋 Data source — bit digital di TX</div>
+<div class="db">
+  <div class="ri"><span class="pill pb">Ada di kode</span><div>
+    <div class="rt">Ada di dalam fungsi <code>sim_OOK()</code> baris 1122 dan <code>sim_4PPM()</code> baris 1164:</div>
+    <code class="rc">tx_bits = randi([0 1], 1, N_bits);  % generate 1000 bit random setiap kali dipanggil</code>
+    <div class="rn">Dipanggil 500 kali per titik grafik (loop MC). Setiap kali menghasilkan 1000 bit yang berbeda-beda secara acak.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G7 subplot (a)</span>
+    <div class="rt" style="margin-top:4px">Bit-bit ini divisualisasikan di Grafik 7 subplot (a) sebagai sinyal kotak NRZ 0/1 dalam domain waktu.</div>
+    <div class="rn">Kode G7: <code>stairs(t_show, tx_signal_NRZ(1:N_show), 'b')</code> baris 566</div>
+  </div></div>
+</div>
+</div>
+
+<!-- MODULATOR -->
+<div class="detail" id="d-mod">
+<div class="dh" style="background:#1e40af">📡 Modulator — OOK-NRZ dan 4-PPM</div>
+<div class="db">
+  <div class="ri"><span class="pill pb">OOK</span><div>
+    <div class="rt">Baris 1125 di <code>sim_OOK()</code> — bit dipetakan ke daya:</div>
+    <code class="rc">tx_signal = tx_bits * P_tx;
+% bit 1 → daya P_tx = 100 mW
+% bit 0 → daya 0 (tidak ada cahaya)</code>
+  </div></div>
+  <div class="ri"><span class="pill pb">4-PPM</span><div>
+    <div class="rt">Baris 1167–1178 di <code>sim_4PPM()</code> — 2 bit dipetakan ke posisi slot:</div>
+    <code class="rc">% [0,0]→slot1, [0,1]→slot2, [1,0]→slot3, [1,1]→slot4
+tx_ppm(i, tx_symbols(i)) = M * P_tx;  % peak = 4×P_tx di slot aktif</code>
+    <div class="rn">PPM mengumpulkan energi di 1 slot, bukan menyebar di semua slot → lebih efisien daya.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G7 subplot (b)</span>
+    <div class="rt" style="margin-top:4px">Sinyal optik setelah pulse shaping Gaussian — bentuk lebih halus dari kotak. Sumbu Y dalam mW.</div>
+    <div class="rn">Kode: <code>tx_shaped = conv(tx_optical, gauss_filter, 'same')</code> baris 552</div>
+  </div></div>
+</div>
+</div>
+
+<!-- LASER -->
+<div class="detail" id="d-las">
+<div class="dh" style="background:#1e40af">🔦 Laser diode — daya dan panjang gelombang</div>
+<div class="db">
+  <div class="ri"><span class="pill pb">Ada di kode (parameter)</span><div>
+    <div class="rt">Didefinisikan di FASE 1 baris 38–40. Tidak ada proses fisik laser yang disimulasikan — hanya nilainya dipakai:</div>
+    <code class="rc">lambda   = 1550e-9;   % panjang gelombang (m) — ITU-R, eye-safe
+P_tx_dBm = 20;        % daya pancar (dBm) — Gismalla et al. 2024
+P_tx     = 0.1;       % = 100 mW (konversi dari dBm)</code>
+    <div class="rn">P_tx adalah amplitudo sinyal OOK dan puncak PPM. k_wave = 2π/λ dipakai untuk menghitung Rytov variance di turbulensi.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pgr">Grafik lewat parameter</span><div>
+    <span class="gtag">G3 sumbu X = variasi P_tx</span>
+    <div class="rt" style="margin-top:4px">G3 adalah grafik di mana P_tx divariasikan 0–30 dBm untuk mencari daya laser minimum per cuaca.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- TX TELESCOPE -->
+<div class="detail" id="d-txt">
+<div class="dh" style="background:#1e40af">🔭 TX telescope — divergensi beam</div>
+<div class="db">
+  <div class="ri"><span class="pill pb">Ada di kode (parameter)</span><div>
+    <div class="rt">θ_div = 2 mrad (baris 49) dipakai untuk menghitung radius beam Gaussian di jarak L:</div>
+    <code class="rc">w_z = D_rx/2 + theta_div * L;
+% contoh L=2km: w_z = 0.05 + 0.002×2000 = 4.05 meter
+% w_z ini masuk ke gen_point_err() untuk hitung A₀</code>
+    <div class="rn">Semakin jauh jarak, beam semakin melebar (w_z makin besar), sehingga A₀ (fraksi daya yang tertangkap lensa) makin kecil.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pgr">Grafik lewat h_p</span><div>
+    <span class="gtag">via w_z → h_p → G2 G3 G4</span>
+    <div class="rn">θ_div tidak langsung membuat grafik sendiri, tapi mempengaruhi semua grafik BER lewat parameter w_z di pointing error.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- h_a -->
+<div class="detail" id="d-ha">
+<div class="dh" style="background:#14532d">🌧 h_a — Redaman atmosfer (Beer-Lambert)</div>
+<div class="db">
+  <div class="ri"><span class="pill pg">Ada di kode</span><div>
+    <div class="rt">Didefinisikan FASE 3 baris 184 sebagai anonymous function, dipanggil setiap loop. Bersifat <strong>deterministik</strong> — tidak random:</div>
+    <code class="rc">dBkm_to_per_m = @(x) (x / 4.343) / 1000;  % konversi satuan
+calc_h_atm = @(beta_dBkm, L_meter) exp(-dBkm_to_per_m(beta_dBkm) .* L_meter);
+
+% dipanggil di setiap loop:
+h_a = calc_h_atm(beta_total(s), L);  % baris 254</code>
+    <div class="rn">h_a dihitung sekali per kombinasi (cuaca, jarak), tidak di-generate ulang tiap iterasi MC karena deterministik.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G1 langsung dari h_a</span>
+    <span class="gtag">G4 β = sumbu X</span>
+    <span class="gtag">G2 G3 G5 via h_total</span>
+    <div class="rt" style="margin-top:4px">G1 = hanya h_a, tidak ada h_t dan h_p, tidak ada Monte Carlo. G4 = β (penyebab h_a) yang divariasikan di sumbu X dengan garis vertikal posisi tiap cuaca Indonesia.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- h_t -->
+<div class="detail" id="d-ht">
+<div class="dh" style="background:#14532d">🌀 h_t — Turbulensi atmosfer (Log-Normal)</div>
+<div class="db">
+  <div class="ri"><span class="pill pg">Ada di kode</span><div>
+    <div class="rt">Fungsi <code>gen_turb_LN()</code> baris 1073–1083. Dipanggil setiap iterasi MC — nilainya selalu baru:</div>
+    <code class="rc">function h_t = gen_turb_LN(Cn2, k_wave, L, N_samples)
+    sigma_R2 = 1.23 * Cn2 * k_wave^(7/6) * L^(11/6);  % Rytov variance
+    sigma_X2 = sigma_R2 / 4;
+    X   = sqrt(sigma_X2) * randn(1, N_samples);  % ← RANDOM (randn)
+    h_t = exp(2 * (X - sigma_X2));               % log-normal
+end</code>
+    <div class="rn">E[h_t] ≈ 1 — rata-rata tidak menambah loss. Tapi per-realisasi bisa lebih besar atau lebih kecil (fluktuasi = scintillation).</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G5 Cn² = sumbu X</span>
+    <span class="gtag">G2 G3 via h_total</span>
+    <span class="gtag">G7(c) via h_total</span>
+    <div class="rt" style="margin-top:4px">G5 mengisolasi efek h_t saja — hanya Cn² yang berubah, cuaca cerah, jarak tetap 2 km. Turbulensi baru signifikan di atas Cn² ≈ 10⁻¹⁴.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- h_p -->
+<div class="detail" id="d-hp">
+<div class="dh" style="background:#14532d">🎯 h_p — Pointing error (Farid & Hranilovic 2007)</div>
+<div class="db">
+  <div class="ri"><span class="pill pg">Ada di kode</span><div>
+    <div class="rt">Fungsi <code>gen_point_err()</code> baris 1094–1109. Dipanggil setiap iterasi MC:</div>
+    <code class="rc">function h_p = gen_point_err(sigma_jitter, w_z, a_rx, N_samples)
+    v    = sqrt(pi) * a_rx / (sqrt(2) * w_z);
+    A0   = (erf(v))^2;          % fraksi daya saat beam center
+    w_eq2 = w_z^2 * sqrt(pi)*erf(v) / (2*v*exp(-v^2));
+    r_d  = sigma_jitter * sqrt(-2*log(rand(1,N)));  % ← RANDOM Rayleigh
+    h_p  = A0 * exp(-2 * r_d.^2 / w_eq2);
+end</code>
+    <div class="rn">sigma_jitter = 0.1 m dari Dabiri & Sadough (2019) untuk UAV hovering. r_d = pergeseran radial beam akibat getaran UAV.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G2 G3 via h_total</span>
+    <span class="gtag">G8 G9 spreading distribusi</span>
+    <span class="gtag">G10 G11 kualitas eye</span>
+    <div class="rt" style="margin-top:4px">h_p menyumbang fading acak ke h_total. Karena random, efeknya memperlebar distribusi di G8/G9 dan menyempitkan bukaan mata di G10/G11.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- RX TELESCOPE -->
+<div class="detail" id="d-rxt">
+<div class="dh" style="background:#7c2d12">🔭 RX telescope — menangkap cahaya</div>
+<div class="db">
+  <div class="ri"><span class="pill pa">Parameter saja</span><div>
+    <div class="rt">Tidak ada proses fisik teleskop yang disimulasikan. Efeknya direpresentasikan oleh parameter D_rx baris 45:</div>
+    <code class="rc">D_rx = 0.10;         % diameter aperture = 10 cm
+a_rx = D_rx / 2;     % radius = 5 cm
+theta_FoV = 10e-3;   % field of view = 10 mrad</code>
+    <div class="rn">a_rx masuk ke gen_point_err() untuk menghitung A₀ = [erf(v)]² — yaitu berapa fraksi daya yang bisa tertangkap lensa saat beam tepat di center aperture.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pgr">Lewat A₀</span><div>
+    <span class="gtag">via A₀ → h_p → semua grafik BER</span>
+    <div class="rn">Catatan: Proposal menyebut D_rx = 5 cm tapi kode menggunakan 10 cm. Perlu konfirmasi ke dosen.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- PIN PHOTODIODE -->
+<div class="detail" id="d-pd">
+<div class="dh" style="background:#7c2d12">💡 PIN photodiode — konversi optik → arus listrik</div>
+<div class="db">
+  <div class="ri"><span class="pill pa">Ada di kode</span><div>
+    <div class="rt">Proses fotodeteksi ada di dua tempat: di dalam <code>sim_OOK()</code> untuk hitung BER, dan di Grafik 7 untuk visualisasi:</div>
+    <code class="rc">% Di sim_OOK() baris 1131 — untuk simulasi BER:
+rx_current = R_det * rx_optical;
+% R_det = 0.8 A/W → setiap 1W cahaya → 0.8 A arus
+
+% Di Grafik 7 baris 555 — untuk visualisasi:
+rx_current = R_det * rx_optical;</code>
+    <div class="rn">Ini adalah titik konversi domain optik → domain elektrik. Setelah baris ini, semua sinyal dalam satuan Ampere (µA).</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G7(d) output photodetector</span>
+    <div class="rt" style="margin-top:4px">Grafik 7 subplot (d) menampilkan sinyal listrik output photodetector — sumbu Y dalam µA. Ini sudah di sisi RX, setelah konversi dari optik.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- TIA + BPF -->
+<div class="detail" id="d-tia">
+<div class="dh" style="background:#7c2d12">🔊 TIA + BPF — amplifier, noise, dan filter</div>
+<div class="db">
+  <div class="ri"><span class="pill pa">Ada di kode — dua bagian</span><div>
+    <div class="rt"><strong>Bagian 1 — Model noise dari TIA</strong> (FASE 1 baris 59–65):</div>
+    <code class="rc">sigma2_thermal = 4 * 1.381e-23 * T_rx * B_noise / R_L;
+% R_L = 1000 Ω = impedansi TIA
+% T_rx = 300 K = suhu tropis Indonesia (merepresentasikan noise TIA)
+% B_noise = Rb/2 = 500 MHz = bandwidth BPF
+N0 = sigma2_thermal + sigma2_shot + sigma2_bg;</code>
+    <div class="rt" style="margin-top:8px"><strong>Bagian 2 — Noise AWGN ditambahkan</strong> di dalam sim_OOK() baris 1134:</div>
+    <code class="rc">noise = sqrt(N0) * randn(1, N_bits);  % ← RANDOM noise
+rx_signal = rx_current + noise;</code>
+    <div class="rt" style="margin-top:8px"><strong>Bagian 3 — Filter penerima (BPF/matched filter)</strong> di Grafik 7 baris 558:</div>
+    <code class="rc">rx_filtered = conv(rx_noisy, gauss_filter, 'same');
+% matched filter Gaussian mengurangi noise di luar bandwidth</code>
+    <div class="rn">Thermal noise dominan >95% dari N0 total karena R_L=1000Ω dan T=300K.</div>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G7(d) setelah noise ditambah</span>
+    <span class="gtag">G7(e) setelah filter BPF</span>
+    <div class="rt" style="margin-top:4px">Perbedaan G7(d) dan G7(e) menunjukkan efek filter — sinyal di (e) lebih halus. Threshold terlihat di kedua subplot.</div>
+  </div></div>
+</div>
+</div>
+
+<!-- DEMODULATOR -->
+<div class="detail" id="d-dem">
+<div class="dh" style="background:#7c2d12">⚖️ Demodulator — keputusan bit (threshold / ML)</div>
+<div class="db">
+  <div class="ri"><span class="pill pa">Ada di kode</span><div>
+    <div class="rt"><strong>OOK — threshold detection</strong>, baris 1138–1139 di sim_OOK():</div>
+    <code class="rc">threshold = (R_det * P_tx * h_channel) / 2;
+% threshold = tepat di tengah antara level "0" dan level "1"
+% adaptif: bergantung h_channel yang berubah tiap realisasi
+rx_bits = double(rx_signal > threshold);
+% sinyal > threshold → putuskan bit "1"
+% sinyal ≤ threshold → putuskan bit "0"</code>
+    <div class="rt" style="margin-top:8px"><strong>4-PPM — ML detection</strong>, baris 1184:</div>
+    <code class="rc">[~, rx_symbols] = max(rx_ppm, [], 2);
+% pilih slot (dari 4) yang punya arus terbesar
+% ini Maximum Likelihood detection → lebih tahan fading</code>
+  </div></div>
+  <div class="sep"></div>
+  <div class="ri"><span class="pill pp">Grafik</span><div>
+    <span class="gtag">G7(d)(e) garis threshold</span>
+    <span class="gtag">G8 area overlap = error</span>
+    <span class="gtag">G9 slot aktif vs kosong</span>
+    <span class="gtag">G10 G11 bukaan mata</span>
+    <div class="rt" style="margin-top:4px">Garis threshold terlihat jelas di G7(d) dan (e). G8 menunjukkan mengapa threshold gagal saat cuaca buruk — distribusi bit "0" dan "1" bertumpuk (overlap).</div>
+  </div></div>
+</div>
+</div>
+
+<!-- OUTPUT DATA / 13 GRAFIK -->
+<div class="detail" id="d-out">
+<div class="dh" style="background:#4c1d95">📊 Output data — 13 Grafik: terjadi di blok mana?</div>
+<div class="db">
+  <div class="grid2">
+    <div class="gcard">
+      <div class="gc-title" style="color:#1e40af">G1 — SNR vs Jarak</div>
+      <div class="gc-text"><strong>Blok:</strong> TX Laser + Kanal h_a saja<br><strong>Tidak ada:</strong> h_t, h_p, MC, RX noise<br>Deterministik. Gambaran awal.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#166534">G2 — BER vs Jarak ← UTAMA</div>
+      <div class="gc-text"><strong>Blok:</strong> Seluruh sistem TX→Kanal→RX<br>BER dihitung di Demodulator.<br>500×1000 bit per titik via MC.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#92400e">G3 — BER vs Daya</div>
+      <div class="gc-text"><strong>Blok:</strong> Sama G2 tapi Laser Ptx divariasikan<br>Jarak dikunci 2 km.<br>Mencari daya laser minimum.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#1e40af">G4 — BER vs β</div>
+      <div class="gc-text"><strong>Blok:</strong> h_a yang divariasikan (β sumbu X)<br>Garis vertikal = posisi cuaca Indonesia.<br>Titik kritis β ≈ 15–20 dB/km.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#166534">G5 — BER vs Turbulensi</div>
+      <div class="gc-text"><strong>Blok:</strong> h_t — Cn² sumbu X<br>h_a tetap (cuaca cerah), jarak tetap.<br>Isolasi efek turbulensi saja.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#92400e">G6 — Kapasitas Ergodik</div>
+      <div class="gc-text"><strong>Blok:</strong> Seluruh sistem, E[log₂(1+SNR)]<br>SNR dari PIN photodetector.<br>Shannon bound teoritis.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#4c1d95">G7 — Domain Waktu (5 subplot)</div>
+      <div class="gc-text"><strong>(a)(b):</strong> Di TX — bit & sinyal optik<br><strong>(c):</strong> Di Kanal — setelah ×h_total<br><strong>(d)(e):</strong> Di RX — photodetector+noise+filter</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#4c1d95">G8 G9 — Konstelasi</div>
+      <div class="gc-text"><strong>Blok:</strong> Sepenuhnya di RX<br>Histogram arus output photodetector+noise.<br>Sebelum keputusan threshold/ML.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#4c1d95">G10 G11 G12 — Eye Diagram</div>
+      <div class="gc-text"><strong>Blok:</strong> Sepenuhnya di RX<br>Sinyal setelah filter BPF/TIA.<br>500 segmen ditumpuk. Q-factor dianotasi.</div>
+    </div>
+    <div class="gcard">
+      <div class="gc-title" style="color:#4c1d95">G13 — Q-Factor vs Jarak</div>
+      <div class="gc-text"><strong>Blok:</strong> RX → demodulator boundary<br>Q=(μ₁−μ₀)/(σ₁+σ₀). Q≥6→BER≤10⁻⁹<br>Melengkapi G2 dengan margin sistem.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let cur = null;
+const map = {
+  ds:'b-ds',mod:'b-mod',las:'b-las',txt:'b-txt',
+  ha:'b-ha',ht:'b-ht',hp:'b-hp',
+  rxt:'b-rxt',pd:'b-pd',tia:'b-tia',dem:'b-dem',out:'b-out'
+};
+function show(id) {
+  document.querySelectorAll('.detail').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.blok').forEach(b=>b.classList.remove('on'));
+  if (cur === id) { cur = null; return; }
+  document.getElementById('d-'+id).classList.add('on');
+  document.getElementById(map[id]).classList.add('on');
+  document.getElementById('d-'+id).scrollIntoView({behavior:'smooth',block:'nearest'});
+  cur = id;
+}
+</script>
+</body>
+</html>
